@@ -21,11 +21,19 @@
  * @author      Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 define('ENROL_AUTO_COURSE_VIEWED', 1);
 define('ENROL_AUTO_MOD_VIEWED', 2);
 define('ENROL_AUTO_LOGIN', 3);
 
+/**
+ * Auto enrolment plugin.
+ *
+ * @package     enrol_auto
+ * @author      Eugene Venter <eugene@catalyst.net.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class enrol_auto_plugin extends enrol_plugin {
 
     /**

@@ -39,10 +39,7 @@ class helper {
      * @return array of mod names
      */
     public static function get_mods_with_viewed_event() {
-        global $DB;
-
         $mods = \core_component::get_plugin_list_with_file('mod', 'classes/event/course_module_viewed.php');
-
         return array_keys($mods);
     }
 }

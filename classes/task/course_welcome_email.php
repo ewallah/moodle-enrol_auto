@@ -22,6 +22,9 @@
 
 namespace enrol_auto\task;
 
+defined('MOODLE_INTERNAL') || die();
+
+
 /**
  * Send a course 'welcome' email to users.
  */
