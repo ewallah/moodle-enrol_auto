@@ -10,6 +10,11 @@ addons:
       - oracle-java8-installer
       - oracle-java8-set-default
       - chromium-chromedriver
+sudo: true
+
+addons:
+  firefox: "47.0.1"
+  postgresql: "9.4"
 
 cache:
   directories:
@@ -17,15 +22,14 @@ cache:
     - $HOME/.npm
 
 php:
- - 7.0
- - 7.2
+ - 7.1
 
 env:
-  - DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
   - DB=pgsql MOODLE_BRANCH=master
-  - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
   - DB=mysqli MOODLE_BRANCH=master
-  - DB=mariadb MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=mariadb MOODLE_BRANCH=MOODLE_36_STABLE
   - DB=mariadb MOODLE_BRANCH=master
 
 before_install:
@@ -33,7 +37,7 @@ before_install:
   - nvm install 8.9
   - nvm use 8.9
   - cd ../..
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
