@@ -1,11 +1,6 @@
 language: php
 dist: xenial
 
-notifications:
-  email:
-    recipients:
-        - rdebleu@eWallah.net
-
 sudo: required
 
 services:
