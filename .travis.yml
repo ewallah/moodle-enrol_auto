@@ -63,8 +63,3 @@ script:
   - moodle-plugin-ci phpunit --coverage-text --coverage-clover
   - moodle-plugin-ci behat
   - moodle-plugin-ci behat --profile chrome
-  - php /home/travis/build/moodle/admin/tool/behat/cli/init.php -a="classic"
-  - moodle-plugin-ci behat --suite="classic"
-  - moodle-plugin-ci behat --suite="classic" --profile chrome
-  - moodle-plugin-ci behat --suite="classic" --profile chrome --dump /home/travis/build/moodle/blocks/admin_bookmarks
-  - /home/travis/build/moodle/vendor/bin/phpunit --testsuite tool_dataprivacy_testsuite,core_privacy_testsuite
