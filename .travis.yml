@@ -68,6 +68,3 @@ script:
   - moodle-plugin-ci behat --suite="classic" --profile chrome
   - moodle-plugin-ci behat --suite="classic" --profile chrome --dump /home/travis/build/moodle/blocks/admin_bookmarks
   - /home/travis/build/moodle/vendor/bin/phpunit --testsuite tool_dataprivacy_testsuite,core_privacy_testsuite
-
-after_success:
-  - moodle-plugin-ci coveralls-upload
