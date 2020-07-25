@@ -165,7 +165,7 @@ class enrol_auto_plugin extends enrol_plugin {
         if ($instance->enrolenddate > 0 && time() > $instance->enrolenddate) {
             return false;
         }
-        
+
         $this->enrol_user($instance, $USER->id, $instance->roleid);
         return time() + 10;
     }
