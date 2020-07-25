@@ -18,20 +18,16 @@
  * Auto enrolment plugin.
  *
  * @package     enrol_auto
- * @author      Eugene Venter <eugene@catalyst.net.nz>
+ * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
-
-define('ENROL_AUTO_COURSE_VIEWED', 1);
-define('ENROL_AUTO_MOD_VIEWED', 2);
-define('ENROL_AUTO_LOGIN', 3);
 
 /**
  * Auto enrolment plugin.
  *
  * @package     enrol_auto
- * @author      Eugene Venter <eugene@catalyst.net.nz>
+ * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_auto_plugin extends enrol_plugin {
@@ -39,107 +35,63 @@ class enrol_auto_plugin extends enrol_plugin {
     /**
      * Returns optional enrolment information icons.
      *
-     * This is used in course list for quick overview of enrolment options.
-     *
-     * We are not using single instance parameter because sometimes
-     * we might want to prevent icon repetition when multiple instances
-     * of one type exist. One instance may also produce several icons.
-     *
      * @param array $instances all enrol instances of this type in one course
      * @return array of pix_icon
      */
     public function get_info_icons(array $instances) {
-        return array(new pix_icon('i/courseevent', get_string('pluginname', 'enrol_auto')));
+        return [new pix_icon('i/courseevent', get_string('pluginname', 'enrol_auto'))];
     }
 
-    public function roles_protected() {
-        // Users may tweak the roles later.
-        return false;
-    }
-
-    public function allow_unenrol(stdClass $instance) {
-        // Users with unenrol cap may unenrol other users manually.
-        return true;
-    }
-
-    public function allow_manage(stdClass $instance) {
-        // Users with manage cap may tweak status.
+    /**
+     * Allow unenrol.
+     *
+     * @param stdClass $instance
+     * @return bool
+     */
+    public function allow_unenrol(stdClass $instance):bool {
         return true;
     }
 
     /**
-     * Sets up navigation entries.
+     * Is it possible to add enrol instance via standard UI?
      *
-     * @param stdClass $instancesnode
-     * @param stdClass $instance
-     * @return void
+     * @param int $courseid id of the course to add the instance to
+     * @return boolean
      */
-    public function add_course_navigation($instancesnode, stdClass $instance) {
-        if ($instance->enrol !== 'auto') {
-             throw new coding_exception('Invalid enrol instance type!');
-        }
-
-        $context = context_course::instance($instance->courseid);
-        if (has_capability('enrol/auto:config', $context)) {
-            $managelink = new moodle_url('/enrol/auto/edit.php',
-                array('courseid' => $instance->courseid, 'id' => $instance->id));
-            $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
-        }
+    public function can_add_instance($courseid):bool {
+        return has_capability('enrol/auto:manage', context_course::instance($courseid));
     }
 
-    /**
-     * Returns edit icons for the page with list of instances
-     * @param stdClass $instance
-     * @return array
-     */
-    public function get_action_icons(stdClass $instance) {
-        global $OUTPUT;
-
-        if ($instance->enrol !== 'auto') {
-            throw new coding_exception('invalid enrol instance!');
-        }
-        $context = context_course::instance($instance->courseid);
-
-        $icons = array();
-
-        if (has_capability('enrol/auto:config', $context)) {
-            $editlink = new moodle_url("/enrol/auto/edit.php",
-                array('courseid' => $instance->courseid, 'id' => $instance->id));
-            $icons[] = $OUTPUT->action_icon($editlink, new pix_icon('t/edit', get_string('edit'), 'core',
-                array('class' => 'smallicon')));
-        }
-
-        return $icons;
-    }
 
     /**
-     * Returns link to page which may be used to add new instance of enrolment plugin in course.
-     * @param int $courseid
-     * @return moodle_url page url
-     */
-    public function get_newinstance_link($courseid) {
-        global $DB;
-
-        $context = context_course::instance($courseid, MUST_EXIST);
-
-        if (!has_capability('moodle/course:enrolconfig', $context) || !has_capability('enrol/auto:config', $context)) {
-            return null;
-        }
-
-        if ($DB->record_exists('enrol', array('courseid' => $courseid, 'enrol' => 'auto'))) {
-            return null;
-        }
-
-        return new moodle_url('/enrol/auto/edit.php', array('courseid' => $courseid));
-    }
-
-    /**
-     * Creates course enrol form, checks if form submitted
-     * and enrols user if necessary. It can also redirect.
+     * Allow manage.
      *
      * @param stdClass $instance
-     * @return string html text, usually a form in a text box
+     * @return bool
      */
+    public function allow_manage(stdClass $instance):bool {
+        return has_capability('enrol/auto:manage', context_course::instance($instance->courseid));
+    }
+
+    /**
+     * Is it possible to hide/show enrol instance via standard UI?
+     *
+     * @param stdClass $instance
+     * @return bool
+     */
+    public function can_hide_show_instance($instance):bool {
+        return has_capability('enrol/auto:config', context_course::instance($instance->courseid));
+    }
+
+     /**
+      * Is it possible to delete enrol instance via standard UI?
+      *
+      * @param stdClass $instance
+      * @return bool
+      */
+    public function can_delete_instance($instance):bool {
+        return has_capability('enrol/auto:config', context_course::instance($instance->courseid));
+    }
 
     /**
      * Add new instance of enrol plugin with default settings.
@@ -148,7 +100,6 @@ class enrol_auto_plugin extends enrol_plugin {
      */
     public function add_default_instance($course) {
         $fields = $this->get_instance_defaults();
-
         return $this->add_instance($course, $fields);
     }
 
@@ -157,14 +108,9 @@ class enrol_auto_plugin extends enrol_plugin {
      * @return array
      */
     public function get_instance_defaults() {
-
-        $fields = array();
-        $fields['status']          = $this->get_config('status');
-        $fields['roleid']          = $this->get_config('roleid');
-        $fields['customint2']      = $this->get_config('sendcoursewelcomemessage');
-        $fields['customint3']      = $this->get_config('enrolon');
-        $fields['customtext2']     = $this->get_config('modviewmods');
-
+        $fields = [];
+        $fields['status'] = $this->get_config('status');
+        $fields['roleid'] = $this->get_config('roleid');
         return $fields;
     }
 
@@ -174,9 +120,9 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param bool $onlyenabled only return an enabled instance
      * @return object|bool $instance or false if not found
      */
-    public function get_instance_for_course($courseid, $onlyenabled=true) {
+    public function get_instance_for_course($courseid, $onlyenabled = true) {
         global $DB;
-        $params = array('enrol' => 'auto', 'courseid' => $courseid);
+        $params = ['enrol' => 'auto', 'courseid' => $courseid];
         if (!empty($onlyenabled)) {
             $params['status'] = ENROL_INSTANCE_ENABLED;
         }
@@ -188,159 +134,82 @@ class enrol_auto_plugin extends enrol_plugin {
      * Attempt to automatically enrol current user in course without any interaction,
      * calling code has to make sure the plugin and instance are active.
      *
-     * This hook is called from the course view page.
-     *
-     * This should return either a timestamp in the future or false.
-     *
      * @param stdClass $instance course enrol instance
-     * @return bool|int false means not enrolled, integer means timeend
+     * @return bool|int false means not enrolled, otherwise a timestamp in the future
      */
     public function try_autoenrol(stdClass $instance) {
-        global $USER, $DB;
-
-        if ($instance->customint3 != ENROL_AUTO_COURSE_VIEWED) {
-            return false;
-        }
+        global $USER;
 
         // Prevent guest user from being enrolled.
         if (isguestuser()) {
             return false;
         }
         $context = context_course::instance($instance->courseid);
+
         // Check if this user can self-enrol.
         if (!has_capability('enrol/auto:enrolself', $context)) {
             return false;
         }
 
-        $this->enrol_user($instance, $USER->id, $instance->roleid);
-        // Send welcome message.
-        if ($instance->customint2) {
-            \enrol_auto\observer::schedule_welcome_email($instance, $USER->id);
+        // Plugin is enabled?
+        if (!enrol_is_enabled('auto')) {
+            return false;
         }
 
-        return 0;
+        // Instance is enabled?
+        if ($instance->status != ENROL_INSTANCE_ENABLED) {
+            return false;
+        }
+
+        // Instance ended.
+        if ($instance->enrolenddate > 0 && time() > $instance->enrolenddate) {
+            return false;
+        }
+        
+        $this->enrol_user($instance, $USER->id, $instance->roleid);
+        return time() + 10;
     }
 
-
-
     /**
-     * Send welcome email to specified user.
+     * Add elements to the edit instance form.
      *
      * @param stdClass $instance
-     * @param stdClass $user user record
-     * @return void
+     * @param MoodleQuickForm $mform
+     * @param context $context
+     * @return bool
      */
-    public function email_welcome_message($instance, $user) {
-        global $CFG, $DB, $PAGE;
+    public function edit_instance_form($instance, MoodleQuickForm $mform, $context) {
+        $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
+        $mform->setType('name', PARAM_TEXT);
 
-        $course = $DB->get_record('course', array('id' => $instance->courseid), '*', MUST_EXIST);
+        $options = [ENROL_INSTANCE_ENABLED  => get_string('yes'), ENROL_INSTANCE_DISABLED => get_string('no')];
+        $mform->addElement('select', 'status', get_string('enabled', 'admin'), $options);
+        $mform->setDefault('status', $this->get_config('status'));
+        $mform->addHelpButton('status', 'status', 'enrol_auto');
 
-        $a = new stdClass();
-        $a->coursename = format_string($course->fullname, true);
-        $a->profileurl = "{$CFG->wwwroot}/user/view.php?id={$user->id}&course={$course->id}";
-        $strmgr = get_string_manager();
+        $role = ($instance->id) ? $instance->roleid : $this->get_config('roleid');
+        $roles = get_default_enrol_roles($context, $role);
+        $mform->addElement('select', 'roleid', get_string('assignrole', 'enrol_paypal'), $roles);
+        $mform->setDefault('roleid', $this->get_config('roleid'));
 
-        if (trim($instance->customtext1) !== '') {
-            $message = $instance->customtext1;
-            $message = str_replace('{$a->coursename}', $a->coursename, $message);
-            $message = str_replace('{$a->profileurl}', $a->profileurl, $message);
-            if (strpos($message, '<') === false) {
-                // Plain text only.
-                $messagetext = $message;
-                $messagehtml = text_to_html($messagetext, null, false, true);
-            } else {
-                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
-                $messagehtml = format_text($message, FORMAT_MOODLE, array('para' => false, 'newlines' => true, 'filter' => true));
-                $messagetext = html_to_text($messagehtml);
-            }
-        } else {
-            $messagetext = $strmgr->get_string('welcometocoursetext', 'enrol_auto', $a, $user->lang);
-            $messagehtml = text_to_html($messagetext, null, false, true);
-        }
-
-        $subject = $strmgr->get_string('welcometocourse', 'enrol_auto', format_string($course->fullname, true), $user->lang);
-        $subject = str_replace('&amp;', '&', $subject);
-
-        $rusers = array();
-        if (!empty($CFG->coursecontact)) {
-            $context = context_course::instance($course->id);
-            $croles = explode(',', $CFG->coursecontact);
-            list($sort, $sortparams) = users_order_by_sql('u');
-            // We only use the first user.
-            $i = 0;
-            do {
-                $rusers = get_role_users($croles[$i], $context, true, '',
-                    'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
-                $i++;
-            } while (empty($rusers) && !empty($croles[$i]));
-        }
-        if ($rusers) {
-            $contact = reset($rusers);
-        } else {
-            $contact = core_user::get_support_user();
-        }
-
-        // Send welcome email.
-        email_to_user($user, $contact, $subject, $messagetext, $messagehtml);
+        $mform->addElement('date_time_selector', 'enrolenddate', get_string('enrolenddate', 'enrol_paypal'), ['optional' => true]);
+        $mform->setDefault('enrolenddate', 0);
+        $mform->addHelpButton('enrolenddate', 'enrolenddate', 'enrol_paypal');
     }
 
     /**
-     * Returns the user who is responsible for auto enrolments in given instance.
+     * Perform custom validation of the data used to edit the instance.
      *
-     * Usually it is the first editing teacher - the person with "highest authority"
-     * as defined by sort_by_roleassignment_authority() having 'enrol/auto:manage'
-     * capability.
-     *
-     * @param int $instanceid enrolment instance id
-     * @return stdClass user record
+     * @param array $data array of ("fieldname"=>value) of submitted data
+     * @param array $files array of uploaded files "element_name"=>tmp_file_path
+     * @param object $instance The instance loaded from the DB
+     * @param context $context The context of the instance we are editing
+     * @return array of "element_name"=>"error_description" if there are errors,
+     *         or an empty array if everything is OK.
      */
-    protected function get_enroller($instanceid) {
-        global $DB;
-
-        if ($this->lasternollerinstanceid == $instanceid and $this->lasternoller) {
-            return $this->lasternoller;
-        }
-
-        $instance = $DB->get_record('enrol', array('id' => $instanceid, 'enrol' => $this->get_name()), '*', MUST_EXIST);
-        $context = context_course::instance($instance->courseid);
-
-        if ($users = get_enrolled_users($context, 'enrol/auto:manage')) {
-            $users = sort_by_roleassignment_authority($users, $context);
-            $this->lasternoller = reset($users);
-            unset($users);
-        } else {
-            $this->lasternoller = parent::get_enroller($instanceid);
-        }
-
-        $this->lasternollerinstanceid = $instanceid;
-
-        return $this->lasternoller;
-    }
-
-    /**
-     * Gets an array of the user enrolment actions.
-     *
-     * @param course_enrolment_manager $manager
-     * @param stdClass $ue A user enrolment object
-     * @return array An array of user_enrolment_actions
-     */
-    public function get_user_enrolment_actions(course_enrolment_manager $manager, $ue) {
-        $actions = array();
-        $context = $manager->get_context();
-        $instance = $ue->enrolmentinstance;
-        $params = $manager->get_moodlepage()->url->params();
-        $params['ue'] = $ue->id;
-        if ($this->allow_unenrol($instance) && has_capability("enrol/auto:unenrol", $context)) {
-            $url = new moodle_url('/enrol/unenroluser.php', $params);
-            $actions[] = new user_enrolment_action(new pix_icon('t/delete', ''), get_string('unenrol', 'enrol'), $url,
-                array('class' => 'unenrollink', 'rel' => $ue->id));
-        }
-        if ($this->allow_manage($instance) && has_capability("enrol/auto:manage", $context)) {
-            $url = new moodle_url('/enrol/editenrolment.php', $params);
-            $actions[] = new user_enrolment_action(new pix_icon('t/edit', ''), get_string('edit'), $url,
-                array('class' => 'editenrollink', 'rel' => $ue->id));
-        }
-        return $actions;
+    public function edit_instance_validation($data, $files, $instance, $context) {
+        $errors = [];
+        return $errors;
     }
 
     /**
@@ -356,11 +225,7 @@ class enrol_auto_plugin extends enrol_plugin {
         if ($step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
             $merge = false;
         } else {
-            $merge = array(
-                'courseid'   => $data->courseid,
-                'enrol'      => $this->get_name(),
-                'roleid'     => $data->roleid,
-            );
+            $merge = ['courseid' => $data->courseid, 'enrol' => 'auto', 'roleid' => $data->roleid];
         }
         if ($merge and $instances = $DB->get_records('enrol', $merge, 'id')) {
             $instance = reset($instances);
@@ -377,11 +242,14 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param restore_enrolments_structure_step $step
      * @param stdClass $data
      * @param stdClass $instance
-     * @param int $oldinstancestatus
      * @param int $userid
+     * @param int $oldinstancestatus
      */
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
-        $this->enrol_user($instance, $userid, null, 0, 0, $data->status);
+        if ($step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
+            $this->enrol_user($instance, $userid, null, 0, 0, $data->status);
+        }
+        mark_user_dirty($userid);
     }
 
     /**
@@ -393,32 +261,16 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param int $contextid
      */
     public function restore_role_assignment($instance, $roleid, $userid, $contextid) {
-        role_assign($roleid, $userid, $contextid, 'enrol_'.$this->get_name(), $instance->id);
+        role_assign($roleid, $userid, $contextid, 'enrol_auto', $instance->id);
+        mark_user_dirty($userid);
     }
 
     /**
-     * Is it possible to hide/show enrol instance via standard UI?
+     * We are a good plugin and don't invent our own UI/validation code path.
      *
-     * @param stdClass $instance
      * @return bool
      */
-    public function can_hide_show_instance($instance) {
-        $context = context_course::instance($instance->courseid);
-        return has_capability('enrol/auto:config', $context);
+    public function use_standard_editing_ui() {
+        return true;
     }
-
-     /**
-      * Is it possible to delete enrol instance via standard UI?
-      *
-      * @param stdClass $instance
-      * @return bool
-      *
-      * Added by A.Pawelczak 2018, adam.pawelczak@neokrates.pl
-      *
-      */
-    public function can_delete_instance($instance) {
-        $context = context_course::instance($instance->courseid);
-        return has_capability('enrol/auto:config', $context);
-    }
-
 }

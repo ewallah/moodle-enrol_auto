@@ -15,31 +15,38 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event observers used in this plugin
+ * Coursecompleted enrolment privacy tests.
  *
  * @package    enrol_auto
  * @copyright  Eugene Venter <eugene@catalyst.net.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace enrol_auto;
+namespace enrol_auto\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/enrol/locallib.php');
+use \core_privacy\tests\provider_testcase;
 
 /**
- * Event observer for enrol_auto.
+ * Coursecompleted enrolment privacy tests.
+ *
+ * @package    enrol_auto
+ * @copyright  Eugene Venter <eugene@catalyst.net.nz>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class helper {
+class privacy_testcase extends provider_testcase {
 
     /**
-     * Get all modules that triggers a course_module_viewed event
-     *
-     * @return array of mod names
+     * Test returning metadata.
+     * @covers enrol_auto\privacy\provider
      */
-    public static function get_mods_with_viewed_event() {
-        $mods = \core_component::get_plugin_list_with_file('mod', 'classes/event/course_module_viewed.php');
-        return array_keys($mods);
+    public function test_get_metadata() {
+        $this->resetAfterTest(true);
+        $collection = new \core_privacy\local\metadata\collection('enrol_auto');
+        $reason = \enrol_auto\privacy\provider::get_reason($collection);
+        $this->assertEquals($reason, 'privacy:metadata');
+        $str = 'does not store';
+        $this->assertContains($str, get_string($reason, 'enrol_auto'));
     }
 }

@@ -18,57 +18,25 @@
  * Strings for component 'enrol_auto', language 'en'.
  *
  * @package     enrol_auto
- * @author      Eugene Venter <eugene@catalyst.net.nz>
+ * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['customwelcomemessage'] = 'Custom welcome message';
-$string['customwelcomemessage_help'] = 'A custom welcome message may be added as plain text or Moodle-auto format, including HTML tags and multi-lang tags.
-
-The following placeholders may be included in the message:
-
-* Course name {$a->coursename}
-* Link to user\'s profile page {$a->profileurl}';
 $string['defaultrole'] = 'Default role assignment';
 $string['defaultrole_desc'] = 'Select role which should be assigned to users during auto enrolment.';
 $string['editenrolment'] = 'Edit enrolment';
-$string['enrolon'] = 'Enrol on';
-$string['enrolon_help'] = 'Choose the event that should trigger auto enrolment.
-
-**Course view** - Enrol a user upon course view.<br>
-
-**User login** - Enrol users as soon as they log in.<br>
-
-**Course activity/resource view** - Enrol a user when one of the selected activities/resources is viewed.<br>
-*NOTE:* this option requires a Guest access enrol instance. ';
-$string['enrolon_desc'] = 'Event which will trigger an auto enrolment.';
-$string['courseview'] = 'Course view';
-$string['modview'] = 'Course activity/resource view';
-$string['modviewmods'] = 'Activities/resources';
-$string['modviewmods_desc'] = 'Viewing any of the selected resources/activities will trigger an auto enrolment.';
 $string['pluginname'] = 'Auto enrolment';
-$string['pluginname_desc'] = 'The auto enrolment plugin automatically enrols users upon course/activity/resource view.';
+$string['pluginname_desc'] = 'The auto enrolment plugin automatically enrols users upon course view.';
 $string['privacy:metadata'] = 'The auto enrolment plugin does not store any personal data.';
-$string['requirepassword'] = 'Require enrolment key';
-$string['requirepassword_desc'] = 'Require enrolment key in new courses and prevent removing of enrolment key from existing courses.';
 $string['role'] = 'Default assigned role';
 $string['auto:config'] = 'Configure auto enrol instances';
 $string['auto:enrolself'] = 'Enrol self in the course';
 $string['auto:manage'] = 'Manage enrolled users';
 $string['auto:unenrol'] = 'Unenrol users from course';
 $string['auto:unenrolself'] = 'Unenrol self from the course';
-$string['sendcoursewelcomemessage'] = 'Send course welcome message';
-$string['sendcoursewelcomemessage_help'] = 'If enabled, users receive a welcome message via email when they get auto enrolled.';
 $string['status'] = 'Allow auto enrolments';
 $string['status_desc'] = 'Allow auto enrolments of users into course by default.';
 $string['status_help'] = 'This setting determines whether this auto enrol plugin is enabled for this course.';
 $string['unenrol'] = 'Unenrol user';
 $string['unenroluser'] = 'Do you really want to unenrol "{$a->user}" from course "{$a->course}"?';
 $string['unenrolselfconfirm'] = 'Do you really want to unenrol yourself from course "{$a}"?';
-$string['userlogin'] = 'User login';
-$string['welcometocourse'] = 'Welcome to {$a}';
-$string['welcometocoursetext'] = 'Welcome to {$a->coursename}!
-
-If you have not done so already, you should edit your profile page so that we can learn more about you:
-
-{$a->profileurl}';

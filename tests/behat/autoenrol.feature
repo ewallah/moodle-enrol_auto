@@ -11,7 +11,7 @@ Feature: Auto enrol setup and use
       | teacher1 | Elmaret1     | Teacher1 | teacher1@asd.com  |
     And the following "courses" exist:
       | fullname  | shortname |
-      | Course 1   | c1        |
+      | Course 1  | c1        |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | c1     | editingteacher |
@@ -25,73 +25,33 @@ Feature: Auto enrol setup and use
     And I am on "Course 1" course homepage
     And I add "Auto enrolment" enrolment method with:
       | Custom instance name | Eugene auto enrolment |
-      | Enrol on             | Course view |
     And I log out
+
     And I am on "Course 1" course homepage
     # trying to access the course should redirect you to the login page
     When I press "Log in as a guest"
     Then I should not see "Topic 1"
     And I should see "Guests cannot access this course."
 
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I navigate to "Users > Enrolled users" in current page administration
+    Then I should not see "eugene@venter.com"
+    But I should see "Eugene auto enrolment"
+
   Scenario: Auto enrolment upon course view
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I add "Auto enrolment" enrolment method with:
       | Custom instance name | Eugene auto enrolment |
-      | Enrol on             | Course view |
-    And I log out
-    And I log in as "student1"
-    And I am on "Course 1" course homepage
-    Then I should see "Topic 1"
-
-  Scenario: Auto enrolment upon login
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I add "Auto enrolment" enrolment method with:
-      | Custom instance name | Eugene auto enrolment |
-      | Enrol on             | User login |
-    And I log out
-    And I log in as "student1"
-    And I log out
-    And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Users > Enrolled users" in current page administration
-    Then I should see "eugene@venter.com"
-    And I should see "Eugene auto enrolment"
-    And I log out
-    Given I log in as "student1"
-    And I am on "Course 1" course homepage
-    Then I should see "Topic 1"
-
-  Scenario: Auto enrolment enabled upon activity view
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I add "Auto enrolment" enrolment method with:
-      | Custom instance name | Eugene auto enrolment |
-      | Enrol on             | Course activity/resource view |
-    And I click on "Edit" "link" in the "Eugene auto enrolment" "table_row"
-    # Select the book activity
-    And I set the field with xpath "//*[@id='id_customtext2_book']" to "1"
-    And I press "Save changes"
-    And I click on "Enable" "link" in the "Guest access" "table_row"
-    And I am on "Course 1" course homepage
-    And I turn editing mode on
-    And I add a "Book" to section "1" and I fill the form with:
-      | Name | Test book |
-      | Description | A beautiful book for Maia! |
-    And I follow "Test book"
-    And I set the following fields to these values:
-      | Chapter title | Chapter one |
-      | Content | A long time ago, in a place far far away... |
-    And I press "Save changes"
+    Then I should not see "eugene@venter.com"
     And I log out
 
-    When I log in as "student1"
+    And I log in as "student1"
     And I am on "Course 1" course homepage
-    # We should be able to access the course via guest access at this point
     Then I should see "Topic 1"
-    And I follow "Test book"
-    Then I should see "far far away..."
     And I log out
 
     When I log in as "teacher1"
@@ -99,3 +59,25 @@ Feature: Auto enrol setup and use
     And I navigate to "Users > Enrolled users" in current page administration
     Then I should see "eugene@venter.com"
     And I should see "Eugene auto enrolment"
+
+  Scenario: Student can unenrol him/her self
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    When I add "Auto enrolment" enrolment method with:
+      | Custom instance name | Eugene auto enrolment |
+    And I log out
+
+    And I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I click on "Actions menu" "link"
+    Then I should see "Unenrol me from c1"
+    And I click on "Unenrol me from c1" "link"
+    Then I should see "Do you really want to unenrol"
+    And I press "Continue"
+    Then I should see "Dashboard"
+    And I log out
+
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I navigate to "Users > Enrolled users" in current page administration
+    Then I should not see "eugene@venter.com"

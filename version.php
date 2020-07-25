@@ -18,15 +18,13 @@
  * Auto enrolment plugin version specification.
  *
  * @package     enrol_auto
- * @author      Eugene Venter <eugene@catalyst.net.nz>
+ * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019081900;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2016120500;        // Requires 3.2 and higher.
-$plugin->component = 'enrol_auto';      // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2020072301;
+$plugin->requires  = 2016120500;
+$plugin->component = 'enrol_auto';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release = 'bleeding';
-
