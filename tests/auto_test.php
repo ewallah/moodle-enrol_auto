@@ -55,7 +55,7 @@ class enrol_auto_testcase extends advanced_testcase {
     /**
      * Tests initial setup.
      */
-    protected function setUp() {
+    protected function setUp():void {
         global $DB;
         $this->resetAfterTest(true);
         $this->assertFalse(enrol_is_enabled('auto'));
@@ -246,11 +246,11 @@ class enrol_auto_testcase extends advanced_testcase {
         $form = new temp_auto_form();
         $mform = $form->getform();
         $this->plugin->edit_instance_form($this->instance, $mform, $context);
-        $this->assertContains('Required field', $mform->getReqHTML());
+        $this->assertStringContainsString('Required field', $mform->getReqHTML());
         ob_start();
         $mform->display();
         $html = ob_get_clean();
-        $this->assertContains('Custom instance name', $html);
+        $this->assertStringContainsString('Custom instance name', $html);
     }
 }
 
