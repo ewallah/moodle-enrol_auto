@@ -47,6 +47,6 @@ class privacy_testcase extends provider_testcase {
         $reason = \enrol_auto\privacy\provider::get_reason($collection);
         $this->assertEquals($reason, 'privacy:metadata');
         $str = 'does not store';
-        $this->assertContains($str, get_string($reason, 'enrol_auto'));
+        $this->assertStringContainsString($str, get_string($reason, 'enrol_auto'));
     }
 }
