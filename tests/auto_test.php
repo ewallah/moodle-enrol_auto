@@ -22,6 +22,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace enrol_auto;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -38,7 +40,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \enrol_auto
  */
-class enrol_auto_testcase extends advanced_testcase {
+class auto_test extends \advanced_testcase {
 
     /** @var stdClass Instance. */
     private $instance;
@@ -95,7 +97,7 @@ class enrol_auto_testcase extends advanced_testcase {
         global $DB;
         $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $generator = $this->getDataGenerator();
-        $context = context_course::instance($this->course->id);
+        $context = \context_course::instance($this->course->id);
         $course = $generator->create_course();
         $user = $generator->create_user();
         $this->assertEquals(false, $this->plugin->get_instance_for_course($course->id));
@@ -154,7 +156,7 @@ class enrol_auto_testcase extends advanced_testcase {
         global $PAGE;
         $generator = $this->getDataGenerator();
         $user = $generator->create_user();
-        $url = new moodle_url('/user/index.php', ['id' => $this->course->id]);
+        $url = new \moodle_url('/user/index.php', ['id' => $this->course->id]);
         $PAGE->set_url($url);
         $manager = new \course_enrolment_manager($PAGE, $this->course);
         $enrolments = $manager->get_user_enrolments($user->id);
@@ -190,8 +192,8 @@ class enrol_auto_testcase extends advanced_testcase {
         $generator = $this->getDataGenerator();
         $user = $generator->create_user();
         $this->plugin->enrol_user($this->instance, $user->id, 5);
-        $bc = new backup_controller(backup::TYPE_1COURSE, $this->course->id, backup::FORMAT_MOODLE, backup::INTERACTIVE_NO,
-            backup::MODE_GENERAL, 2);
+        $bc = new \backup_controller(\backup::TYPE_1COURSE, $this->course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL, 2);
         $bc->execute_plan();
         $results = $bc->get_results();
         $file = $results['backup_destination'];
@@ -199,23 +201,23 @@ class enrol_auto_testcase extends advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
-        $rc = new restore_controller('test-restore-course-event', $this->course->id, backup::INTERACTIVE_NO,
-            backup::MODE_GENERAL, 2, backup::TARGET_NEW_COURSE);
+        $rc = new \restore_controller('test-restore-course-event', $this->course->id, \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL, 2, \backup::TARGET_NEW_COURSE);
         $rc->execute_precheck();
         $rc->execute_plan();
         $newid = $rc->get_courseid();
         $rc->destroy();
         $this->assertEquals(4, $DB->count_records('enrol', ['enrol' => 'auto']));
         $this->assertTrue(is_enrolled(\context_course::instance($newid), $user->id));
-        $url = new moodle_url('/user/index.php', ['id' => $newid]);
+        $url = new \moodle_url('/user/index.php', ['id' => $newid]);
         $PAGE->set_url($url);
         $course2 = get_course($newid);
         $manager = new \course_enrolment_manager($PAGE, $course2);
         $enrolments = $manager->get_user_enrolments($user->id);
         $this->assertCount(2, $enrolments);
         $this->assertCount(5, $manager->get_enrolment_instance_names());
-        $bc = new backup_controller(backup::TYPE_1COURSE, $this->course->id, backup::FORMAT_MOODLE, backup::INTERACTIVE_NO,
-            backup::MODE_GENERAL, 2);
+        $bc = new \backup_controller(\backup::TYPE_1COURSE, $this->course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL, 2);
         $bc->execute_plan();
         $results = $bc->get_results();
         $file = $results['backup_destination'];
@@ -223,8 +225,8 @@ class enrol_auto_testcase extends advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
-        $rc = new restore_controller('test-restore-course-event', $newid, backup::INTERACTIVE_NO,
-            backup::MODE_GENERAL, 2, backup::TARGET_EXISTING_ADDING);
+        $rc = new \restore_controller('test-restore-course-event', $newid, \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL, 2, \backup::TARGET_EXISTING_ADDING);
         $rc->execute_precheck();
         $rc->execute_plan();
         $rc->destroy();
