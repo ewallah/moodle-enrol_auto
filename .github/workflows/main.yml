@@ -119,7 +119,7 @@ jobs:
         run: moodle-plugin-ci --ansi behat --profile chrome
 
       - name: admin bookmarks
-        if: ${{ always() }}
+        if: ${{ matrix.moodle-branch != 'master'}}
         run: php admin/tool/behat/cli/run.php --profile=chrome --tags=@block_admin_bookmarks
         working-directory: moodle
 
