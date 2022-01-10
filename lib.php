@@ -21,7 +21,6 @@
  * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Auto enrolment plugin.
