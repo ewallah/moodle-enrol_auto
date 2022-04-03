@@ -78,6 +78,7 @@ class auto_test extends \advanced_testcase {
 
     /**
      * Tests basics.
+     * @covers \enrol_auto
      */
     public function test_basics() {
         $this->assertTrue(enrol_is_enabled('auto'));
@@ -92,6 +93,7 @@ class auto_test extends \advanced_testcase {
 
     /**
      * Test library.
+     * @covers \enrol_auto
      */
     public function test_library() {
         global $DB;
@@ -151,6 +153,7 @@ class auto_test extends \advanced_testcase {
 
     /**
      * Test ue.
+     * @covers \enrol_auto
      */
     public function test_ue() {
         global $PAGE;
@@ -176,6 +179,7 @@ class auto_test extends \advanced_testcase {
 
     /**
      * Test other files.
+     * @covers \enrol_auto
      */
     public function test_files() {
         global $CFG;
@@ -184,6 +188,7 @@ class auto_test extends \advanced_testcase {
 
     /**
      * Test backup.
+     * @covers \enrol_auto
      */
     public function test_backup() {
         global $CFG, $DB, $PAGE;
@@ -236,6 +241,7 @@ class auto_test extends \advanced_testcase {
 
     /**
      * Test form.
+     * @covers \enrol_auto
      */
     public function test_form() {
         $page = new \moodle_page();
