@@ -30,19 +30,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['MOODLE_311_STABLE']
-        php: ['8.0', '7.4']
+        moodle-branch: ['master']
+        php: ['8.0']
         database: ['mariadb', 'pgsql']
-        include:
-        - php: 8.0
-          moodle-branch: master
-          database: mariadb
-        - php: 7.4
-          moodle-branch: MOODLE_310_STABLE
-          database: mariadb
-        - php: 7.4
-          moodle-branch: MOODLE_39_STABLE
-          database: mariadb
 
     steps:
       - name: checkout plugin
@@ -113,15 +103,15 @@ jobs:
         run: moodle-plugin-ci --ansi phpunit --coverage-text
 
       - name: firefox
-        if: ${{ matrix.moodle-branch != 'master'}}
+        if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat
       
       - name: chrome
-        if: ${{ matrix.moodle-branch != 'master'}}
+        if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat --profile chrome
 
       - name: admin bookmarks
-        if: ${{ matrix.moodle-branch != 'master'}}
+        if: ${{ always() }}
         run: php admin/tool/behat/cli/run.php --profile=chrome --tags=@block_admin_bookmarks
         working-directory: moodle
 
