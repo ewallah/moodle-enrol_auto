@@ -22,8 +22,7 @@ Feature: Auto enrol setup and use
 
   Scenario: Auto enrolment but no guest access
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I add "Auto enrolment" enrolment method with:
+    And I add "Auto enrolment" enrolment method in "Course 1" with:
       | Custom instance name | Eugene auto enrolment |
     And I log out
 
@@ -34,18 +33,15 @@ Feature: Auto enrol setup and use
     And I should see "Guests cannot access this course."
 
     When I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolled users" in current page administration
+    And I am on the "Course 1" "enrolled users" page
     Then I should not see "eugene@venter.com"
     But I should see "Eugene auto enrolment"
 
   Scenario: Auto enrolment upon course view
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I add "Auto enrolment" enrolment method with:
+    And I add "Auto enrolment" enrolment method in "Course 1" with:
       | Custom instance name | Eugene auto enrolment |
-    And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolled users" in current page administration
+    And I am on the "Course 1" "enrolled users" page
     Then I should not see "eugene@venter.com"
     And I log out
 
@@ -55,29 +51,22 @@ Feature: Auto enrol setup and use
     And I log out
 
     When I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolled users" in current page administration
+    And I am on the "Course 1" "enrolled users" page
     Then I should see "eugene@venter.com"
     And I should see "Eugene auto enrolment"
 
   Scenario: Student can unenrol him/her self
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I add "Auto enrolment" enrolment method with:
+    And I add "Auto enrolment" enrolment method in "Course 1" with:
       | Custom instance name | Eugene auto enrolment |
     And I log out
 
     And I log in as "student1"
     And I am on "Course 1" course homepage
-    And I click on "Actions menu" "link"
-    Then I should see "Unenrol me from c1"
-    And I click on "Unenrol me from c1" "link"
-    Then I should see "Do you really want to unenrol"
-    And I press "Continue"
-    Then I should see "Dashboard"
+    And I navigate to "Unenrol me from c1" in current page administration
+    And I click on "Continue" "button" in the "Confirm" "dialogue"
     And I log out
 
     When I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolled users" in current page administration
+    And I am on the "Course 1" "enrolled users" page
     Then I should not see "eugene@venter.com"
