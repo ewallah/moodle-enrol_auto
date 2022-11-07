@@ -226,7 +226,7 @@ class enrol_auto_plugin extends enrol_plugin {
         } else {
             $merge = ['courseid' => $data->courseid, 'enrol' => 'auto', 'roleid' => $data->roleid];
         }
-        if ($merge and $instances = $DB->get_records('enrol', $merge, 'id')) {
+        if ($merge && $instances = $DB->get_records('enrol', $merge, 'id')) {
             $instance = reset($instances);
             $instanceid = $instance->id;
         } else {
