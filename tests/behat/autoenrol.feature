@@ -28,7 +28,7 @@ Feature: Auto enrol setup and use
 
     And I am on "Course 1" course homepage
     # trying to access the course should redirect you to the login page
-    When I press "Log in as a guest"
+    When I press "Access as a guest"
     Then I should not see "Topic 1"
     And I should see "Guests cannot access this course."
 
