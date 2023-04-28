@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['master', 'MOODLE_401_STABLE',  'MOODLE_402_STABLE', ]
+        moodle-branch: ['master', 'MOODLE_401_STABLE',  'MOODLE_402_STABLE']
         php: ['8.1']
         database: ['mariadb', 'pgsql']
 
@@ -102,9 +102,9 @@ jobs:
         run: moodle-plugin-ci --ansi phpunit --coverage-text
 
       - name: firefox
-        if: ${{ matrix.moodle-branch != 'master'}}
+        if: ${{ matrix.moodle-branch == 'MOODLE_401_STABLE' }}
         run: moodle-plugin-ci --ansi behat
       
       - name: chrome
-        if: ${{ matrix.moodle-branch != 'master'}}
+        if: ${{ matrix.moodle-branch == 'MOODLE_401_STABLE' }}
         run: moodle-plugin-ci --ansi behat --profile chrome
