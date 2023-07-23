@@ -63,7 +63,7 @@ Feature: Auto enrol setup and use
 
     And I log in as "student1"
     And I am on "Course 1" course homepage
-    And I navigate to "Unenrol me from c1" in current page administration
+    And I navigate to "Unenrol me from this course" in current page administration
     And I click on "Continue" "button" in the "Confirm" "dialogue"
     And I log out
 
