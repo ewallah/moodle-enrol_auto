@@ -102,17 +102,13 @@ jobs:
         run: moodle-plugin-ci --ansi mustache
 
       - name: grunt
-        if: ${{ always() }}
+        if: ${{ matrix.moodle-branch == 'master' }}
         run: moodle-plugin-ci --ansi grunt
 
       - name: phpunit 
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi phpunit --coverage-text
 
-      - name: firefox
-        if: ${{ matrix.moodle-branch == 'MOODLE_401_STABLE' }}
-        run: moodle-plugin-ci --ansi behat
-      
       - name: chrome
-        if: ${{ matrix.moodle-branch == 'MOODLE_401_STABLE' }}
+        if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat --profile chrome
