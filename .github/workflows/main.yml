@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: ['master', 'MOODLE_402_STABLE']
+        moodle-branch: ['master', 'MOODLE_401_STABLE', 'MOODLE_402_STABLE']
         php: ['8.1']
         database: ['mariadb', 'pgsql']
 
@@ -44,9 +44,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, pgsql, mysqli, gd, xmlrpc,zip
           ini-values: max_input_vars=5000
-          coverage: xdebug
+          coverage: pcov
  
       - name: npm cache
         uses: actions/cache@v3
@@ -107,8 +106,26 @@ jobs:
 
       - name: phpunit 
         if: ${{ always() }}
-        run: moodle-plugin-ci --ansi phpunit --coverage-text
+        run: moodle-plugin-ci --ansi phpunit --coverage-text --coverage-clover
 
+      - name: coveralls
+        if: ${{ matrix.moodle-branch == 'master' }}
+        run: moodle-plugin-ci coveralls-upload
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: firefox
+        if: ${{ always() }}
+        run: moodle-plugin-ci --ansi behat
+      
       - name: chrome
         if: ${{ always() }}
         run: moodle-plugin-ci --ansi behat --profile chrome
+
+      - name: firefox classic
+        if: ${{ always() }}
+        run: moodle-plugin-ci --ansi behat --suite classic
+      
+      - name: chrome classic
+        if: ${{ always() }}
+        run: moodle-plugin-ci --ansi behat --suite classic --profile=chrome
