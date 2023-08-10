@@ -33,6 +33,8 @@
             <directory suffix=".php">.</directory>
         </include>
         <exclude>
+            <directory suffix=".php">db</directory>
+            <directory suffix=".php">lang/en</directory>
             <directory suffix="_test.php">.</directory>
             <file>unenrolself.php</file>
             <file>version.php</file>
