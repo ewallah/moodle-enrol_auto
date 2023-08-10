@@ -127,6 +127,7 @@ class auto_test extends \advanced_testcase {
         $tmp = $this->plugin->edit_instance_validation(['status' => 0], null, $this->instance, null);
         $this->assertEquals([], $tmp);
         $this->setUser(1);
+        $this->assertFalse($this->plugin->try_autoenrol($this->instance));
         $this->assertEquals(null, $this->plugin->enrol_page_hook($this->instance));
         $this->assertCount(1, $this->plugin->get_info_icons([$this->instance]));
         $this->setUser($user);
@@ -147,6 +148,9 @@ class auto_test extends \advanced_testcase {
         $this->setUser($user);
         $this->assertEquals($this->plugin->try_autoenrol($this->instance), time() + 10);
         $this->assertCount(1, $this->plugin->get_info_icons([$this->instance]));
+        assign_capability('enrol/auto:enrolself', CAP_PROHIBIT, 5, \context_course::instance($this->course->id));
+        $this->assertFalse($this->plugin->try_autoenrol($this->instance));
+        $this->setAdminUser();
         set_config('enrol_plugins_enabled', '');
         $this->assertFalse($this->plugin->try_autoenrol($this->instance));
     }

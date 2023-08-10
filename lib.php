@@ -151,17 +151,9 @@ class enrol_auto_plugin extends enrol_plugin {
         }
 
         // Plugin is enabled?
-        if (!enrol_is_enabled('auto')) {
-            return false;
-        }
-
-        // Instance is enabled?
-        if ($instance->status != ENROL_INSTANCE_ENABLED) {
-            return false;
-        }
-
-        // Instance ended.
-        if ($instance->enrolenddate > 0 && time() > $instance->enrolenddate) {
+        if (!enrol_is_enabled('auto') ||
+            $instance->status != ENROL_INSTANCE_ENABLED ||
+            ($instance->enrolenddate > 0 && time() > $instance->enrolenddate)) {
             return false;
         }
 
