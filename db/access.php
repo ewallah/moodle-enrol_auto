@@ -25,53 +25,34 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-
-    /* Add or edit enrol-auto instance in course. */
-    'enrol/auto:config' => array(
+$capabilities = [
+    'enrol/auto:config' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        )
-    ),
+        'archetypes' => ['editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
+    ],
 
-    /* Manage user auto-enrolments. */
-    'enrol/auto:manage' => array(
+    'enrol/auto:manage' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        )
-    ),
+        'archetypes' => ['editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
+    ],
 
-    /* Allow the user to enrol themselves. */
-    'enrol/auto:enrolself' => array(
+    'enrol/auto:enrolself' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSECAT,
-        'archetypes' => array(
-            'user' => CAP_ALLOW,
-        )
-    ),
+        'archetypes' => ['user' => CAP_ALLOW],
+    ],
 
-    /* Voluntarily unenrol auto from course - watch out for data loss. */
-    'enrol/auto:unenrolself' => array(
+    'enrol/auto:unenrolself' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'student' => CAP_ALLOW,
-        )
-    ),
+        'archetypes' => ['student' => CAP_ALLOW],
+    ],
 
-    /* Unenrol anybody from course (including self) -  watch out for data loss. */
-    'enrol/auto:unenrol' => array(
+    'enrol/auto:unenrol' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        )
-    ),
-);
+        'archetypes' => ['editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
+    ],
+];

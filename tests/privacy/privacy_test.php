@@ -24,7 +24,7 @@
 
 namespace enrol_auto\privacy;
 
-use \core_privacy\tests\provider_testcase;
+use core_privacy\tests\provider_testcase;
 
 /**
  * Coursecompleted enrolment privacy tests.
