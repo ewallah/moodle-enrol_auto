@@ -80,7 +80,7 @@ class auto_test extends \advanced_testcase {
      * Tests basics.
      * @covers \enrol_auto_plugin
      */
-    public function test_basics() {
+    public function test_basics(): void {
         $this->assertTrue(enrol_is_enabled('auto'));
 
         // Correct enrol instance.
@@ -95,7 +95,7 @@ class auto_test extends \advanced_testcase {
      * Test library.
      * @covers \enrol_auto_plugin
      */
-    public function test_library() {
+    public function test_library(): void {
         global $DB;
         $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $generator = $this->getDataGenerator();
@@ -159,7 +159,7 @@ class auto_test extends \advanced_testcase {
      * Test ue.
      * @covers \enrol_auto_plugin
      */
-    public function test_ue() {
+    public function test_ue(): void {
         global $PAGE;
         $generator = $this->getDataGenerator();
         $user = $generator->create_user();
@@ -185,7 +185,7 @@ class auto_test extends \advanced_testcase {
      * Test other files.
      * @covers \enrol_auto_plugin
      */
-    public function test_files() {
+    public function test_files(): void {
         global $CFG;
         include($CFG->dirroot . '/enrol/auto/db/access.php');
     }
@@ -194,7 +194,7 @@ class auto_test extends \advanced_testcase {
      * Test backup.
      * @covers \enrol_auto_plugin
      */
-    public function test_backup() {
+    public function test_backup(): void {
         global $CFG, $DB, $PAGE;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
@@ -247,7 +247,7 @@ class auto_test extends \advanced_testcase {
      * Test form.
      * @covers \enrol_auto_plugin
      */
-    public function test_form() {
+    public function test_form(): void {
         $page = new \moodle_page();
         $context = \context_course::instance($this->course->id);
         $page->set_context($context);
