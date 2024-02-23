@@ -57,7 +57,7 @@ class auto_test extends \advanced_testcase {
     /**
      * Tests initial setup.
      */
-    protected function setUp():void {
+    protected function setUp(): void {
         global $DB;
         $this->resetAfterTest(true);
         $this->assertFalse(enrol_is_enabled('auto'));

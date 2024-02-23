@@ -47,7 +47,7 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param stdClass $instance
      * @return bool
      */
-    public function allow_unenrol(stdClass $instance):bool {
+    public function allow_unenrol(stdClass $instance): bool {
         return true;
     }
 
@@ -57,7 +57,7 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param int $courseid id of the course to add the instance to
      * @return boolean
      */
-    public function can_add_instance($courseid):bool {
+    public function can_add_instance($courseid): bool {
         return has_capability('enrol/auto:manage', context_course::instance($courseid));
     }
 
@@ -68,7 +68,7 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param stdClass $instance
      * @return bool
      */
-    public function allow_manage(stdClass $instance):bool {
+    public function allow_manage(stdClass $instance): bool {
         return has_capability('enrol/auto:manage', context_course::instance($instance->courseid));
     }
 
@@ -78,7 +78,7 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param stdClass $instance
      * @return bool
      */
-    public function can_hide_show_instance($instance):bool {
+    public function can_hide_show_instance($instance): bool {
         return has_capability('enrol/auto:config', context_course::instance($instance->courseid));
     }
 
@@ -88,7 +88,7 @@ class enrol_auto_plugin extends enrol_plugin {
       * @param stdClass $instance
       * @return bool
       */
-    public function can_delete_instance($instance):bool {
+    public function can_delete_instance($instance): bool {
         return has_capability('enrol/auto:config', context_course::instance($instance->courseid));
     }
 
