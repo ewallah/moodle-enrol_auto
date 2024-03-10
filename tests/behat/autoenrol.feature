@@ -12,6 +12,9 @@ Feature: Auto enrol setup and use
     And the following "courses" exist:
       | fullname  | shortname |
       | Course 1  | c1        |
+    And the following "activities" exist:
+      | activity | name     | course | idnumber |
+      | page     | TestPage | c1     | page1    |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | c1     | editingteacher |
@@ -29,7 +32,7 @@ Feature: Auto enrol setup and use
     And I am on "Course 1" course homepage
     # trying to access the course should redirect you to the login page
     When I press "Access as a guest"
-    Then I should not see "Topic 1"
+    Then I should not see "TestPage"
     And I should see "Guests cannot access this course."
 
     When I log in as "teacher1"
@@ -47,7 +50,7 @@ Feature: Auto enrol setup and use
 
     And I log in as "student1"
     And I am on "Course 1" course homepage
-    Then I should see "Topic 1"
+    Then I should see "TestPage"
     And I log out
 
     When I log in as "teacher1"
