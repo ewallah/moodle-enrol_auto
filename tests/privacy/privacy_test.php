@@ -34,7 +34,7 @@ use core_privacy\tests\provider_testcase;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \enrol_auto\privacy\provider
  */
-class privacy_test extends provider_testcase {
+final class privacy_test extends provider_testcase {
 
     /**
      * Test returning metadata.

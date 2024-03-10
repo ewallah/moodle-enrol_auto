@@ -40,7 +40,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \enrol_auto
  */
-class auto_test extends \advanced_testcase {
+final class auto_test extends \advanced_testcase {
 
     /** @var stdClass Instance. */
     private $instance;
