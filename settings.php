@@ -26,24 +26,40 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
+    require_once($CFG->dirroot . '/enrol/auto/lib.php');
 
-    require_once($CFG->dirroot.'/enrol/auto/lib.php');
+    $settings->add(new admin_setting_heading(
+        'enrol_auto_defaults',
+        get_string('enrolinstancedefaults', 'admin'),
+        get_string('enrolinstancedefaults_desc', 'admin')
+    ));
 
-    $settings->add(new admin_setting_heading('enrol_auto_defaults',
-        get_string('enrolinstancedefaults', 'admin'), get_string('enrolinstancedefaults_desc', 'admin')));
-
-    $settings->add(new admin_setting_configcheckbox('enrol_auto/defaultenrol',
-        get_string('defaultenrol', 'enrol'), get_string('defaultenrol_desc', 'enrol'), 1));
+    $settings->add(new admin_setting_configcheckbox(
+        'enrol_auto/defaultenrol',
+        get_string('defaultenrol', 'enrol'),
+        get_string('defaultenrol_desc', 'enrol'),
+        1
+    ));
 
     $options = [ENROL_INSTANCE_ENABLED => get_string('yes'), ENROL_INSTANCE_DISABLED => get_string('no')];
-    $settings->add(new admin_setting_configselect('enrol_auto/status',
-        get_string('status', 'enrol_auto'), get_string('status_desc', 'enrol_auto'), ENROL_INSTANCE_DISABLED, $options));
+    $settings->add(new admin_setting_configselect(
+        'enrol_auto/status',
+        get_string('status', 'enrol_auto'),
+        get_string('status_desc', 'enrol_auto'),
+        ENROL_INSTANCE_DISABLED,
+        $options
+    ));
 
     if (!during_initial_install()) {
         $options = get_default_enrol_roles(context_system::instance());
         $student = get_archetype_roles('student');
         $student = reset($student);
-        $settings->add(new admin_setting_configselect('enrol_auto/roleid',
-            get_string('defaultrole', 'enrol_auto'), get_string('defaultrole_desc', 'enrol_auto'), $student->id, $options));
+        $settings->add(new admin_setting_configselect(
+            'enrol_auto/roleid',
+            get_string('defaultrole', 'enrol_auto'),
+            get_string('defaultrole_desc', 'enrol_auto'),
+            $student->id,
+            $options
+        ));
     }
 }

@@ -41,7 +41,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @coversDefaultClass \enrol_auto
  */
 final class auto_test extends \advanced_testcase {
-
     /** @var stdClass Instance. */
     private $instance;
 
@@ -201,8 +200,14 @@ final class auto_test extends \advanced_testcase {
         $generator = $this->getDataGenerator();
         $user = $generator->create_user();
         $this->plugin->enrol_user($this->instance, $user->id, 5);
-        $bc = new \backup_controller(\backup::TYPE_1COURSE, $this->course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2);
+        $bc = new \backup_controller(
+            \backup::TYPE_1COURSE,
+            $this->course->id,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2
+        );
         $bc->execute_plan();
         $results = $bc->get_results();
         $file = $results['backup_destination'];
@@ -210,8 +215,14 @@ final class auto_test extends \advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
-        $rc = new \restore_controller('test-restore-course-event', $this->course->id, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2, \backup::TARGET_NEW_COURSE);
+        $rc = new \restore_controller(
+            'test-restore-course-event',
+            $this->course->id,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2,
+            \backup::TARGET_NEW_COURSE
+        );
         $rc->execute_precheck();
         $rc->execute_plan();
         $newid = $rc->get_courseid();
@@ -225,8 +236,14 @@ final class auto_test extends \advanced_testcase {
         $enrolments = $manager->get_user_enrolments($user->id);
         $this->assertCount(2, $enrolments);
         $this->assertCount(5, $manager->get_enrolment_instance_names());
-        $bc = new \backup_controller(\backup::TYPE_1COURSE, $this->course->id, \backup::FORMAT_MOODLE, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2);
+        $bc = new \backup_controller(
+            \backup::TYPE_1COURSE,
+            $this->course->id,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2
+        );
         $bc->execute_plan();
         $results = $bc->get_results();
         $file = $results['backup_destination'];
@@ -234,8 +251,14 @@ final class auto_test extends \advanced_testcase {
         $filepath = $CFG->dataroot . '/temp/backup/test-restore-course-event';
         $file->extract_to_pathname($fp, $filepath);
         $bc->destroy();
-        $rc = new \restore_controller('test-restore-course-event', $newid, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, 2, \backup::TARGET_EXISTING_ADDING);
+        $rc = new \restore_controller(
+            'test-restore-course-event',
+            $newid,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            2,
+            \backup::TARGET_EXISTING_ADDING
+        );
         $rc->execute_precheck();
         $rc->execute_plan();
         $rc->destroy();

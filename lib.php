@@ -30,7 +30,6 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_auto_plugin extends enrol_plugin {
-
     /**
      * Returns optional enrolment information icons.
      *
@@ -151,9 +150,11 @@ class enrol_auto_plugin extends enrol_plugin {
         }
 
         // Plugin is enabled?
-        if (!enrol_is_enabled('auto') ||
+        if (
+            !enrol_is_enabled('auto') ||
             $instance->status != ENROL_INSTANCE_ENABLED ||
-            ($instance->enrolenddate > 0 && time() > $instance->enrolenddate)) {
+            ($instance->enrolenddate > 0 && time() > $instance->enrolenddate)
+        ) {
             return false;
         }
 
