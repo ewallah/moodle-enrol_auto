@@ -28,4 +28,4 @@ $plugin->component = 'enrol_auto';
 $plugin->version = 2023101200;
 $plugin->requires = 2022041200;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v4.0.2';
+$plugin->release = 'v4.4.1';
