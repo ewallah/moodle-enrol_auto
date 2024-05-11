@@ -19,7 +19,7 @@
  *
  * @package    enrol_auto
  * @copyright  Eugene Venter <eugene@catalyst.net.nz>
- * @author     Renaat Debleu <rdebleu@eWallah.net>
+ * @author     Renaat Debleu <info@eWallah.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ namespace enrol_auto\privacy;
  *
  * @package    enrol_auto
  * @copyright  Eugene Venter <eugene@catalyst.net.nz>
- * @author     Renaat Debleu <rdebleu@eWallah.net>
+ * @author     Renaat Debleu <info@eWallah.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {

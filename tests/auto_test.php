@@ -293,7 +293,8 @@ final class auto_test extends \advanced_testcase {
  * Form object to be used in test case.
  *
  * @package   enrol_auto
- * @copyright Renaat Debleu <info@eWallah.net>
+ * @copyright eWallah (www.eWallah.net)
+ * @author    Renaat Debleu <info@eWallah.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class temp_auto_form extends \moodleform {
