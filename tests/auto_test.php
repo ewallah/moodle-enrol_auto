@@ -38,7 +38,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     enrol_auto
  * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \enrol_auto)]
+ * #[CoversClass(enrol_auto)]
  */
 final class auto_test extends \advanced_testcase {
     /** @var stdClass Instance. */
