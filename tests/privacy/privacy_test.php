@@ -32,12 +32,12 @@ use core_privacy\tests\provider_testcase;
  * @package    enrol_auto
  * @copyright  Eugene Venter <eugene@catalyst.net.nz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \enrol_auto\privacy\provider
+ * @coversDefaultClass \enrol_auto\privacy\provider)]
  */
 final class privacy_test extends provider_testcase {
     /**
      * Test returning metadata.
-     * @covers \enrol_auto\privacy\provider
+     * #[CoversClass(enrol_auto\privacy\provider)]
      */
     public function test_get_metadata(): void {
         $this->resetAfterTest(true);
