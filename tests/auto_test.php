@@ -39,6 +39,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(enrol_auto_plugin::class)]
 final class auto_test extends \advanced_testcase {
     /** @var stdClass Instance. */
     private $instance;
@@ -77,7 +78,6 @@ final class auto_test extends \advanced_testcase {
 
     /**
      * Tests basics.
-     * @covers \enrol_auto_plugin
      */
     public function test_basics(): void {
         $this->assertTrue(enrol_is_enabled('auto'));
@@ -92,7 +92,6 @@ final class auto_test extends \advanced_testcase {
 
     /**
      * Test library.
-     * @covers \enrol_auto_plugin
      */
     public function test_library(): void {
         global $DB;
@@ -156,7 +155,6 @@ final class auto_test extends \advanced_testcase {
 
     /**
      * Test ue.
-     * @covers \enrol_auto_plugin
      */
     public function test_ue(): void {
         global $PAGE;
@@ -182,7 +180,6 @@ final class auto_test extends \advanced_testcase {
 
     /**
      * Test other files.
-     * @covers \enrol_auto_plugin
      */
     public function test_files(): void {
         global $CFG;
@@ -191,7 +188,6 @@ final class auto_test extends \advanced_testcase {
 
     /**
      * Test backup.
-     * @covers \enrol_auto_plugin
      */
     public function test_backup(): void {
         global $CFG, $DB, $PAGE;
@@ -268,7 +264,6 @@ final class auto_test extends \advanced_testcase {
 
     /**
      * Test form.
-     * @covers \enrol_auto_plugin
      */
     public function test_form(): void {
         $page = new \moodle_page();
