@@ -25,6 +25,7 @@
 namespace enrol_auto\privacy;
 
 use core_privacy\tests\provider_testcase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Coursecompleted enrolment privacy tests.

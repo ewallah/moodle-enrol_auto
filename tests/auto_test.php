@@ -23,6 +23,7 @@
  */
 
 namespace enrol_auto;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +40,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @copyright   Eugene Venter <eugene@catalyst.net.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(enrol_auto_plugin::class)]
+#[CoversClass(\enrol_auto_plugin::class)]
 final class auto_test extends \advanced_testcase {
     /** @var stdClass Instance. */
     private $instance;
@@ -266,6 +267,8 @@ final class auto_test extends \advanced_testcase {
      * Test form.
      */
     public function test_form(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/enrol/auto/tests/temp_auto_form.php');
         $page = new \moodle_page();
         $context = \context_course::instance($this->course->id);
         $page->set_context($context);
@@ -281,32 +284,5 @@ final class auto_test extends \advanced_testcase {
         $mform->display();
         $html = ob_get_clean();
         $this->assertStringContainsString('Custom instance name', $html);
-    }
-}
-
-/**
- * Form object to be used in test case.
- *
- * @package   enrol_auto
- * @copyright eWallah (www.eWallah.net)
- * @author    Renaat Debleu <info@eWallah.net>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class temp_auto_form extends \moodleform {
-    /**
-     * Form definition.
-     */
-    public function definition() {
-        // No definition required.
-    }
-    /**
-     * Returns form reference
-     * @return MoodleQuickForm
-     */
-    public function getform() {
-        $mform = $this->_form;
-        // Set submitted flag, to simulate submission.
-        $mform->_flagSubmitted = true;
-        return $mform;
     }
 }
