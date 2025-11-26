@@ -45,9 +45,6 @@ final class auto_test extends \advanced_testcase {
     /** @var stdClass Instance. */
     private $instance;
 
-    /** @var stdClass Student. */
-    private $student;
-
     /** @var stdClass Course. */
     private $course;
 
@@ -71,7 +68,6 @@ final class auto_test extends \advanced_testcase {
         $this->plugin = enrol_get_plugin('auto');
         $generator = $this->getDataGenerator();
         $this->course = $generator->create_course();
-        $this->student = $generator->create_user();
         $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $id = $this->plugin->add_instance($this->course, ['roleid' => $studentrole]);
         $this->instance = $DB->get_record('enrol', ['id' => $id]);
@@ -206,6 +202,7 @@ final class auto_test extends \advanced_testcase {
             2
         );
         $bc->execute_plan();
+
         $results = $bc->get_results();
         $file = $results['backup_destination'];
         $fp = get_file_packer('application/vnd.moodle.backup');
@@ -222,6 +219,7 @@ final class auto_test extends \advanced_testcase {
         );
         $rc->execute_precheck();
         $rc->execute_plan();
+
         $newid = $rc->get_courseid();
         $rc->destroy();
         $this->assertEquals(4, $DB->count_records('enrol', ['enrol' => 'auto']));
@@ -242,6 +240,7 @@ final class auto_test extends \advanced_testcase {
             2
         );
         $bc->execute_plan();
+
         $results = $bc->get_results();
         $file = $results['backup_destination'];
         $fp = get_file_packer('application/vnd.moodle.backup');
@@ -276,6 +275,7 @@ final class auto_test extends \advanced_testcase {
         $page->set_pagelayout('standard');
         $page->set_pagetype('course-view');
         $page->set_url('/enrol/auto/manage.php?enrolid=' . $this->instance->id);
+
         $form = new temp_auto_form();
         $mform = $form->getform();
         $this->plugin->edit_instance_form($this->instance, $mform, $context);

@@ -41,9 +41,10 @@ class temp_auto_form extends \moodleform {
     /**
      * Form definition.
      */
-    public function definition() {
+    public function definition(): void {
         // No definition required.
     }
+
     /**
      * Returns form reference
      * @return MoodleQuickForm

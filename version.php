@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'enrol_auto';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '.1.1';
-$plugin->version = 2025100700;
+$plugin->release = "v5.1.1";
+$plugin->version = 2025112600;
 $plugin->requires = 2025041400;
 $plugin->supported = [500, 501];

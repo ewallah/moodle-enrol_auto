@@ -42,9 +42,7 @@ class enrol_auto_plugin extends enrol_plugin {
 
     /**
      * Allow unenrol.
-     *
-     * @param stdClass $instance
-     * @return bool
+     * @param stdClass $instance Instance
      */
     public function allow_unenrol(stdClass $instance): bool {
         return true;
@@ -54,7 +52,6 @@ class enrol_auto_plugin extends enrol_plugin {
      * Is it possible to add enrol instance via standard UI?
      *
      * @param int $courseid id of the course to add the instance to
-     * @return boolean
      */
     public function can_add_instance($courseid): bool {
         return has_capability('enrol/auto:manage', context_course::instance($courseid));
@@ -63,9 +60,7 @@ class enrol_auto_plugin extends enrol_plugin {
 
     /**
      * Allow manage.
-     *
-     * @param stdClass $instance
-     * @return bool
+     * @param stdClass $instance Instance
      */
     public function allow_manage(stdClass $instance): bool {
         return has_capability('enrol/auto:manage', context_course::instance($instance->courseid));
@@ -74,8 +69,7 @@ class enrol_auto_plugin extends enrol_plugin {
     /**
      * Is it possible to hide/show enrol instance via standard UI?
      *
-     * @param stdClass $instance
-     * @return bool
+     * @param stdClass $instance Instance
      */
     public function can_hide_show_instance($instance): bool {
         return has_capability('enrol/auto:config', context_course::instance($instance->courseid));
@@ -84,8 +78,7 @@ class enrol_auto_plugin extends enrol_plugin {
      /**
       * Is it possible to delete enrol instance via standard UI?
       *
-      * @param stdClass $instance
-      * @return bool
+      * @param stdClass $instance Instance
       */
     public function can_delete_instance($instance): bool {
         return has_capability('enrol/auto:config', context_course::instance($instance->courseid));
@@ -103,13 +96,10 @@ class enrol_auto_plugin extends enrol_plugin {
 
     /**
      * Returns defaults for new instances.
-     * @return array
+     * @return array defaults
      */
     public function get_instance_defaults() {
-        $fields = [];
-        $fields['status'] = $this->get_config('status');
-        $fields['roleid'] = $this->get_config('roleid');
-        return $fields;
+        return ['status' => $this->get_config('status'), 'roleid' => $this->get_config('roleid')];
     }
 
     /**
@@ -142,6 +132,7 @@ class enrol_auto_plugin extends enrol_plugin {
         if (isguestuser()) {
             return false;
         }
+
         $context = context_course::instance($instance->courseid);
 
         // Check if this user can self-enrol.
@@ -165,12 +156,11 @@ class enrol_auto_plugin extends enrol_plugin {
     /**
      * Add elements to the edit instance form.
      *
-     * @param stdClass $instance
-     * @param MoodleQuickForm $mform
-     * @param context $context
-     * @return bool
+     * @param stdClass $instance Instance
+     * @param MoodleQuickForm $mform Form
+     * @param context $context Context
      */
-    public function edit_instance_form($instance, MoodleQuickForm $mform, $context) {
+    public function edit_instance_form($instance, MoodleQuickForm $mform, $context): void {
         $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
         $mform->setType('name', PARAM_TEXT);
 
@@ -196,63 +186,64 @@ class enrol_auto_plugin extends enrol_plugin {
      * @param array $files array of uploaded files "element_name"=>tmp_file_path
      * @param object $instance The instance loaded from the DB
      * @param context $context The context of the instance we are editing
-     * @return array of "element_name"=>"error_description" if there are errors,
-     *         or an empty array if everything is OK.
+     * @return array of "element_name"=>"error_description" if there are errors.
      */
     public function edit_instance_validation($data, $files, $instance, $context) {
-        $errors = [];
-        return $errors;
+        return [];
     }
 
     /**
      * Restore instance and map settings.
      *
-     * @param restore_enrolments_structure_step $step
-     * @param stdClass $data
-     * @param stdClass $course
-     * @param int $oldid
+     * @param restore_enrolments_structure_step $step Step
+     * @param stdClass $data Data
+     * @param stdClass $course Course
+     * @param int $oldid Old id
      */
-    public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
+    public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid): void {
         global $DB;
         if ($step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
             $merge = false;
         } else {
             $merge = ['courseid' => $data->courseid, 'enrol' => 'auto', 'roleid' => $data->roleid];
         }
+
         if ($merge && $instances = $DB->get_records('enrol', $merge, 'id')) {
             $instance = reset($instances);
             $instanceid = $instance->id;
         } else {
             $instanceid = $this->add_instance($course, (array)$data);
         }
+
         $step->set_mapping('enrol', $oldid, $instanceid);
     }
 
     /**
      * Restore user enrolment.
      *
-     * @param restore_enrolments_structure_step $step
-     * @param stdClass $data
-     * @param stdClass $instance
-     * @param int $userid
-     * @param int $oldinstancestatus
+     * @param restore_enrolments_structure_step $step Step
+     * @param stdClass $data Data
+     * @param stdClass $instance Instance
+     * @param int $userid User id
+     * @param int $old Instance status
      */
-    public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
+    public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $old): void {
         if ($step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
             $this->enrol_user($instance, $userid, null, 0, 0, $data->status);
         }
+
         mark_user_dirty($userid);
     }
 
     /**
      * Restore role assignment.
      *
-     * @param stdClass $instance
-     * @param int $roleid
-     * @param int $userid
-     * @param int $contextid
+     * @param stdClass $instance Instance
+     * @param int $roleid Role id
+     * @param int $userid User id
+     * @param int $contextid Context id
      */
-    public function restore_role_assignment($instance, $roleid, $userid, $contextid) {
+    public function restore_role_assignment($instance, $roleid, $userid, $contextid): void {
         role_assign($roleid, $userid, $contextid, 'enrol_auto', $instance->id);
         mark_user_dirty($userid);
     }
@@ -260,7 +251,7 @@ class enrol_auto_plugin extends enrol_plugin {
     /**
      * We are a good plugin and don't invent our own UI/validation code path.
      *
-     * @return bool
+     * @return bool True
      */
     public function use_standard_editing_ui() {
         return true;
