@@ -140,17 +140,15 @@ class enrol_auto_plugin extends enrol_plugin {
             return false;
         }
 
-        // Plugin is enabled?
-        if (
-            !enrol_is_enabled('auto') ||
-            $instance->status != ENROL_INSTANCE_ENABLED ||
-            ($instance->enrolenddate > 0 && time() > $instance->enrolenddate)
-        ) {
-            return false;
+        if (enrol_is_enabled('auto') && $instance->status == ENROL_INSTANCE_ENABLED) {
+            if ($instance->enrolenddate > 0 && time() > $instance->enrolenddate) {
+                return false;
+            }
+            $this->enrol_user($instance, $USER->id, $instance->roleid);
+            return time() + 10;
         }
 
-        $this->enrol_user($instance, $USER->id, $instance->roleid);
-        return time() + 10;
+        return false;
     }
 
     /**
@@ -229,10 +227,8 @@ class enrol_auto_plugin extends enrol_plugin {
      */
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $old): void {
         if ($step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
-            $this->enrol_user($instance, $userid, null, 0, 0, $data->status);
+            $this->enrol_user($instance, $userid);
         }
-
-        mark_user_dirty($userid);
     }
 
     /**
@@ -245,7 +241,6 @@ class enrol_auto_plugin extends enrol_plugin {
      */
     public function restore_role_assignment($instance, $roleid, $userid, $contextid): void {
         role_assign($roleid, $userid, $contextid, 'enrol_auto', $instance->id);
-        mark_user_dirty($userid);
     }
 
     /**
