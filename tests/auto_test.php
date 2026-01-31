@@ -23,6 +23,7 @@
  */
 
 namespace enrol_auto;
+use context_course;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -60,16 +61,20 @@ final class auto_test extends \advanced_testcase {
         $this->resetAfterTest(true);
         $this->assertFalse(enrol_is_enabled('auto'));
         $enabled = enrol_get_plugins(true);
-        unset($enabled['guest']);
         unset($enabled['self']);
         $enabled['auto'] = true;
         set_config('enrol_plugins_enabled', implode(',', array_keys($enabled)));
         $this->setAdminUser();
         $this->plugin = enrol_get_plugin('auto');
         $generator = $this->getDataGenerator();
+        $generator->create_user();
+        $generator->create_user();
+        $other = $generator->create_course();
+        $this->plugin->add_instance($other, ['roleid' => 3]);
+        $other = $generator->create_course();
+        $this->plugin->add_instance($other, ['roleid' => 5]);
         $this->course = $generator->create_course();
-        $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student']);
-        $id = $this->plugin->add_instance($this->course, ['roleid' => $studentrole]);
+        $id = $this->plugin->add_instance($this->course, ['roleid' => 5, 'enrolenddate' => time() + 666]);
         $this->instance = $DB->get_record('enrol', ['id' => $id]);
     }
 
@@ -88,13 +93,61 @@ final class auto_test extends \advanced_testcase {
     }
 
     /**
+     * Test guest.
+     */
+    public function test_guest_and_roles(): void {
+        global $DB, $USER;
+        $generator = $this->getDataGenerator();
+        $context = context_course::instance($this->course->id);
+
+        $this->setUser(0);
+        $this->assertFalse($this->plugin->try_autoenrol($this->instance));
+
+        $guest = $DB->get_record('user', ['username' => 'guest']);
+        $this->setUser($guest);
+        $this->assertFalse($this->plugin->try_autoenrol($this->instance));
+
+        $this->setAdminUser();
+        $this->assertTrue($this->plugin->try_autoenrol($this->instance) > 0);
+        $this->assertTrue(is_enrolled($context, $USER->id));
+        $this->assertArrayHasKey($USER->id, get_role_users(5, $context));
+
+        $user = $generator->create_user();
+        $this->setUser($user);
+        $this->assertTrue($this->plugin->try_autoenrol($this->instance) > 0);
+        $this->assertTrue(is_enrolled($context, $USER->id));
+        $this->assertArrayHasKey($USER->id, get_role_users(5, $context));
+
+        $id = $this->plugin->add_instance($this->course, ['roleid' => 2, 'enrolenddate' => time() - 666]);
+        $instance = $DB->get_record('enrol', ['id' => $id]);
+        $this->assertFalse($this->plugin->try_autoenrol($instance));
+
+        $user = $generator->create_user();
+        $this->setUser($user);
+        $id = $this->plugin->add_instance($this->course, ['roleid' => 4, 'status' => ENROL_INSTANCE_DISABLED]);
+        $instance = $DB->get_record('enrol', ['id' => $id]);
+        $this->assertFalse($this->plugin->try_autoenrol($instance));
+        $this->assertFalse(is_enrolled($context, $USER->id));
+        $this->assertArrayNotHasKey($USER->id, get_role_users(4, $context));
+
+        $id = $this->plugin->add_instance($this->course, ['roleid' => 4, 'status' => ENROL_INSTANCE_ENABLED]);
+        $instance = $DB->get_record('enrol', ['id' => $id]);
+        $this->assertTrue($this->plugin->try_autoenrol($instance) > 0);
+        $this->assertTrue(is_enrolled($context, $USER->id));
+        $this->assertArrayHasKey($USER->id, get_role_users(4, $context));
+
+        $this->plugin->restore_role_assignment($instance, 2, $user->id, $context->id);
+        $this->assertArrayHasKey($USER->id, get_role_users(2, $context));
+    }
+
+    /**
      * Test library.
      */
     public function test_library(): void {
         global $DB;
         $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student']);
         $generator = $this->getDataGenerator();
-        $context = \context_course::instance($this->course->id);
+        $context = context_course::instance($this->course->id);
         $course = $generator->create_course();
         $user = $generator->create_user();
         $this->assertEquals(false, $this->plugin->get_instance_for_course($course->id));
@@ -128,7 +181,7 @@ final class auto_test extends \advanced_testcase {
         $this->setUser($user);
         $this->assertCount(1, $this->plugin->get_info_icons([$this->instance]));
         $page = new \moodle_page();
-        $page->set_context(\context_course::instance($this->course->id));
+        $page->set_context(context_course::instance($this->course->id));
         $page->set_course($this->course);
         $page->set_pagelayout('standard');
         $page->set_pagetype('course-view');
@@ -143,9 +196,16 @@ final class auto_test extends \advanced_testcase {
         $this->setUser($user);
         $this->assertEquals($this->plugin->try_autoenrol($this->instance), time() + 10);
         $this->assertCount(1, $this->plugin->get_info_icons([$this->instance]));
-        assign_capability('enrol/auto:enrolself', CAP_PROHIBIT, 5, \context_course::instance($this->course->id));
+        assign_capability('enrol/auto:enrolself', CAP_PROHIBIT, 5, context_course::instance($this->course->id));
         $this->assertFalse($this->plugin->try_autoenrol($this->instance));
         $this->setAdminUser();
+        $this->assertEquals($this->plugin->get_instance_defaults(), ['status' => 1, 'roleid' => 5]);
+
+        set_config('status', 0, 'enrol_auto');
+        set_config('roleid', 4, 'enrol_auto');
+        $plugin = enrol_get_plugin('auto');
+        $this->assertEquals($plugin->get_instance_defaults(), ['status' => 0, 'roleid' => 4]);
+
         set_config('enrol_plugins_enabled', '');
         $this->assertFalse($this->plugin->try_autoenrol($this->instance));
     }
@@ -222,15 +282,15 @@ final class auto_test extends \advanced_testcase {
 
         $newid = $rc->get_courseid();
         $rc->destroy();
-        $this->assertEquals(4, $DB->count_records('enrol', ['enrol' => 'auto']));
-        $this->assertTrue(is_enrolled(\context_course::instance($newid), $user->id));
+        $this->assertEquals(8, $DB->count_records('enrol', ['enrol' => 'auto']));
+        $this->assertTrue(is_enrolled(context_course::instance($newid), $user->id));
         $url = new \moodle_url('/user/index.php', ['id' => $newid]);
         $PAGE->set_url($url);
         $course2 = get_course($newid);
         $manager = new \course_enrolment_manager($PAGE, $course2);
         $enrolments = $manager->get_user_enrolments($user->id);
         $this->assertCount(2, $enrolments);
-        $this->assertCount(5, $manager->get_enrolment_instance_names());
+        $this->assertCount(6, $manager->get_enrolment_instance_names());
         $bc = new \backup_controller(
             \backup::TYPE_1COURSE,
             $this->course->id,
@@ -258,8 +318,10 @@ final class auto_test extends \advanced_testcase {
         $rc->execute_precheck();
         $rc->execute_plan();
         $rc->destroy();
-        $this->assertEquals(4, $DB->count_records('enrol', ['enrol' => 'auto']));
-        $this->assertTrue(is_enrolled(\context_course::instance($newid), $user->id));
+        $this->assertEquals(8, $DB->count_records('enrol', ['enrol' => 'auto']));
+        $context = context_course::instance($newid);
+        $this->assertTrue(is_enrolled($context, $user->id));
+        $this->assertArrayHasKey($user->id, get_role_users(5, $context));
     }
 
     /**
@@ -268,8 +330,9 @@ final class auto_test extends \advanced_testcase {
     public function test_form(): void {
         global $CFG;
         require_once($CFG->dirroot . '/enrol/auto/tests/temp_auto_form.php');
+        set_config('roleid', 4, 'enrol_auto');
         $page = new \moodle_page();
-        $context = \context_course::instance($this->course->id);
+        $context = context_course::instance($this->course->id);
         $page->set_context($context);
         $page->set_course($this->course);
         $page->set_pagelayout('standard');
@@ -280,9 +343,37 @@ final class auto_test extends \advanced_testcase {
         $mform = $form->getform();
         $this->plugin->edit_instance_form($this->instance, $mform, $context);
         $this->assertStringContainsString('Required field', $mform->getReqHTML());
-        ob_start();
-        $mform->display();
-        $html = ob_get_clean();
-        $this->assertStringContainsString('Custom instance name', $html);
+        $cleaned = preg_replace('/\s+/', '', $form->render());
+        $this->assertStringContainsString('Custominstancename', $cleaned);
+        $strs = [
+            '<formautocomplete="off"action=""method="post"accept-charset="utf-8"',
+            '<labelid="id_name_label"class="d-inlineword-break"for="id_name">Custominstancename</label>',
+            '<inputtype="text"class="form-control"name="name"id="id_name"value="">',
+            '<divclass="form-control-feedbackinvalid-feedback"id="id_error_name"></div>',
+            '<labelid="id_status_label"class="d-inlineword-break"for="id_status">Enabled</label>',
+            'Thissettingdetermineswhetherthisautoenrolpluginisenabledforthiscourse.',
+            '<iclass="iconfafa-circle-questiontext-infofa-fw"title="HelpwithAllowautoenrolments"',
+            '<selectclass="form-select"name="status"id="id_status">',
+            '<optionvalue="0">Yes</option><optionvalue="1"selected>No</option></select>',
+            '<divclass="form-control-feedbackinvalid-feedback"id="id_error_status">',
+            '<labelid="id_roleid_label"class="d-inlineword-break"for="id_roleid">Assignrole</label>',
+            '<selectclass="form-select"name="roleid"id="id_roleid">',
+            'divid="fitem_id_enrolenddate"class="mb-3rowfitem"data-groupname="enrolenddate">',
+            '<pid="id_enrolenddate_label"class="mb-0word-break"aria-hidden="true">Enddate</p>',
+            '<optionvalue="4"selected>Non-editingteacher</option>',
+            'userscanbeenrolleduntilthisdateonly',
+            'HelpwithEnddate"role="img"aria-label="HelpwithEnddate">',
+            '<inputtype="checkbox"name="enrolenddate[enabled]"',
+            'class="form-check-input"id="id_enrolenddate_enabled"value="1">',
+            '<optionvalue="3">March</option>',
+            'id="id_error_enrolenddate_month"',
+            '<optionvalue="1961">1961</option>',
+            '<divclass="form-control-feedbackinvalid-feedback"id="id_error_enrolenddate">',
+            'id="id_enrolenddate_enabled"value="1">Enable</label>',
+            '<labeldata-fieldtype="checkbox"class="form-checkfitem"><inputtype="checkbox"name="enrolenddate[enabled]"',
+        ];
+        foreach ($strs as $str) {
+            $this->assertStringContainsString($str, $cleaned);
+        }
     }
 }
