@@ -29,11 +29,12 @@ Feature: Auto enrol setup and use
       | Custom instance name | Eugene auto enrolment |
     And I log out
 
+    When I log in as "guest"
     And I am on "Course 1" course homepage
-    # trying to access the course should redirect you to the login page
-    When I press "Access as a guest"
-    Then I should not see "TestPage"
-    And I should see "Guests cannot access this course."
+    Then I should see "Guests cannot access this course."
+    And I should see "Please log in."
+    But I should not see "TestPage"
+    And I log out
 
     When I log in as "teacher1"
     And I am on the "Course 1" "enrolled users" page
