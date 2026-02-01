@@ -26,14 +26,6 @@ namespace enrol_auto;
 use context_course;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-
-require_once($CFG->dirroot . '/enrol/auto/lib.php');
-require_once($CFG->dirroot . '/enrol/locallib.php');
-require_once($CFG->libdir . '/formslib.php');
-
 /**
  * Auto enrolment plugin tests.
  *
@@ -51,6 +43,17 @@ final class auto_test extends \advanced_testcase {
 
     /** @var stdClass Plugin. */
     private $plugin;
+
+
+    /**
+     * Setup to ensure that forms and locallib are loaded.
+     */
+    public static function setUpBeforeClass(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/enrol/auto/lib.php');
+        require_once($CFG->dirroot . '/enrol/locallib.php');
+        require_once($CFG->libdir . '/formslib.php');
+    }
 
     /**
      * Tests initial setup.
@@ -104,6 +107,7 @@ final class auto_test extends \advanced_testcase {
         $this->assertFalse($this->plugin->try_autoenrol($this->instance));
 
         $guest = $DB->get_record('user', ['username' => 'guest']);
+        set_config('siteguest', $guest->id);
         $this->setUser($guest);
         $this->assertFalse($this->plugin->try_autoenrol($this->instance));
 

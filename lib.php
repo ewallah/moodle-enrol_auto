@@ -141,7 +141,7 @@ class enrol_auto_plugin extends enrol_plugin {
         }
 
         if (enrol_is_enabled('auto') && $instance->status == ENROL_INSTANCE_ENABLED) {
-            if ($instance->enrolenddate > 0 && time() > $instance->enrolenddate) {
+            if ($instance->enrolenddate && time() > $instance->enrolenddate) {
                 return false;
             }
             $this->enrol_user($instance, $USER->id, $instance->roleid);
