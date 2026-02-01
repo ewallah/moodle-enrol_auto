@@ -53,6 +53,7 @@ final class auto_test extends \advanced_testcase {
         require_once($CFG->dirroot . '/enrol/auto/lib.php');
         require_once($CFG->dirroot . '/enrol/locallib.php');
         require_once($CFG->libdir . '/formslib.php');
+        parent::setUpBeforeClass();
     }
 
     /**
