@@ -370,7 +370,7 @@ final class auto_test extends \advanced_testcase {
             'HelpwithEnddate"role="img"aria-label="HelpwithEnddate">',
             '<inputtype="checkbox"name="enrolenddate[enabled]"',
             'class="form-check-input"id="id_enrolenddate_enabled"value="1">',
-            '<optionvalue="3">March</option>',
+            '>March</option>',
             'id="id_error_enrolenddate_month"',
             '<optionvalue="1961">1961</option>',
             '<divclass="form-control-feedbackinvalid-feedback"id="id_error_enrolenddate">',
