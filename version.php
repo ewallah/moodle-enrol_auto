@@ -19,6 +19,7 @@
  *
  * @package     enrol_auto
  * @copyright   Eugene Venter <eugene@catalyst.net.nz>
+ * @author      Renaat Debleu
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

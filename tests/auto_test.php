@@ -23,6 +23,7 @@
  */
 
 namespace enrol_auto;
+
 use context_course;
 use PHPUnit\Framework\Attributes\CoversClass;
 
